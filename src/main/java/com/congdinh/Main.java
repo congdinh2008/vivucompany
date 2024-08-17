@@ -1,11 +1,15 @@
 package com.congdinh;
 
+import java.time.LocalDate;
+
 import org.hibernate.Session;
 import org.hibernate.Transaction;
 
 import com.congdinh.entities.Department;
 import com.congdinh.entities.Employee;
 import com.congdinh.entities.EmployeeDetail;
+import com.congdinh.entities.Project;
+import com.congdinh.entities.enums.ProjectStatus;
 import com.congdinh.utils.HibernateUtils;
 
 public class Main {
@@ -50,6 +54,33 @@ public class Main {
                         session.persist(employee4);
                         session.persist(employee5);
                         session.persist(employee6);
+
+                        transaction.commit();
+                } catch (Exception e) {
+                        e.printStackTrace();
+                        if (transaction != null) {
+                                transaction.rollback();
+                        }
+                }
+
+                // Create Project belonging to the department
+                Project project1 = new Project("Setup 10 PC for employee", "Description 1", LocalDate.now(),
+                                LocalDate.now().plusDays(30), ProjectStatus.IN_PROGRESS, department);
+
+                Project project2 = new Project("Migration HR System", "Description 2", LocalDate.now(),
+                                LocalDate.now().plusDays(60),
+                                ProjectStatus.PENDING, department);
+
+                Project project3 = new Project("Headhunting 10 IT Engineers", "Description 3", LocalDate.now(),
+                                LocalDate.now().plusDays(90), ProjectStatus.COMPLETED, department2);
+
+                // Add projects to the department
+                try (Session session = HibernateUtils.getSessionFactory().openSession()) {
+                        transaction = session.beginTransaction();
+
+                        session.persist(project1);
+                        session.persist(project2);
+                        session.persist(project3);
 
                         transaction.commit();
                 } catch (Exception e) {

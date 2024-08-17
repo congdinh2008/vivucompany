@@ -27,5 +27,6 @@
         <!-- Names the annotated entity class -->
         <mapping class="com.congdinh.entities.Department"/>
         <mapping class="com.congdinh.entities.Employee"/>
+        <mapping class="com.congdinh.entities.EmployeeDetail"/>
     </session-factory>
 </hibernate-configuration>

@@ -25,6 +25,10 @@ public class Employee {
     @JoinColumn(name = "department_id")
     private Department department;
 
+    @OneToOne(mappedBy = "employee", cascade = CascadeType.ALL)
+    @PrimaryKeyJoinColumn
+    private EmployeeDetail employeeDetail;
+
     // Getters and setters
     public UUID getId() {
         return id;
@@ -66,6 +70,14 @@ public class Employee {
         this.department = department;
     }
 
+    public EmployeeDetail getEmployeeDetail() {
+        return employeeDetail;
+    }
+
+    public void setEmployeeDetail(EmployeeDetail employeeDetail) {
+        this.employeeDetail = employeeDetail;
+    }
+
     // Constructors
     public Employee() {
     }
@@ -85,4 +97,20 @@ public class Employee {
         this.department = department;
     }
 
+    public Employee(UUID id, String name, String email, String phone, Department department, EmployeeDetail employeeDetail) {
+        this.id = id;
+        this.name = name;
+        this.email = email;
+        this.phone = phone;
+        this.department = department;
+        this.employeeDetail = employeeDetail;
+    }
+
+    public Employee(String name, String email, String phone, Department department, EmployeeDetail employeeDetail) {
+        this.name = name;
+        this.email = email;
+        this.phone = phone;
+        this.department = department;
+        this.employeeDetail = employeeDetail;
+    }
 }

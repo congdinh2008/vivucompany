@@ -29,5 +29,6 @@
         <mapping class="com.congdinh.entities.Employee"/>
         <mapping class="com.congdinh.entities.EmployeeDetail"/>
         <mapping class="com.congdinh.entities.Project"/>
+        <mapping class="com.congdinh.entities.ProjectEmployee"/>
     </session-factory>
 </hibernate-configuration>

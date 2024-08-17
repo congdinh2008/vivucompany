@@ -1,6 +1,7 @@
 package com.congdinh.entities;
 
 import java.time.LocalDate;
+import java.util.List;
 import java.util.UUID;
 
 import org.hibernate.annotations.TimeZoneColumn;
@@ -36,6 +37,9 @@ public class Project {
     @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     @JoinColumn(name = "department_id")
     private Department department;
+
+    @OneToMany(mappedBy = "project", cascade = CascadeType.ALL)
+    private List<ProjectEmployee> projectEmployees;
 
     // Getters and setters
     public UUID getId() {
@@ -92,6 +96,14 @@ public class Project {
 
     public void setDepartment(Department department) {
         this.department = department;
+    }
+
+    public List<ProjectEmployee> getProjectEmployees() {
+        return projectEmployees;
+    }
+
+    public void setProjectEmployees(List<ProjectEmployee> projectEmployees) {
+        this.projectEmployees = projectEmployees;
     }
 
     // Constructors

@@ -1,5 +1,6 @@
 package com.congdinh.entities;
 
+import java.util.List;
 import java.util.UUID;
 
 import jakarta.persistence.*;
@@ -28,6 +29,9 @@ public class Employee {
     @OneToOne(mappedBy = "employee", cascade = CascadeType.ALL)
     @PrimaryKeyJoinColumn
     private EmployeeDetail employeeDetail;
+
+    @OneToMany(mappedBy = "employee", cascade = CascadeType.ALL)
+    private List<ProjectEmployee> projectEmployees;
 
     // Getters and setters
     public UUID getId() {
@@ -76,6 +80,14 @@ public class Employee {
 
     public void setEmployeeDetail(EmployeeDetail employeeDetail) {
         this.employeeDetail = employeeDetail;
+    }
+
+    public List<ProjectEmployee> getProjectEmployees() {
+        return projectEmployees;
+    }
+
+    public void setProjectEmployees(List<ProjectEmployee> projectEmployees) {
+        this.projectEmployees = projectEmployees;
     }
 
     // Constructors

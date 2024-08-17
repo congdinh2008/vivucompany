@@ -9,6 +9,7 @@ import com.congdinh.entities.Department;
 import com.congdinh.entities.Employee;
 import com.congdinh.entities.EmployeeDetail;
 import com.congdinh.entities.Project;
+import com.congdinh.entities.ProjectEmployee;
 import com.congdinh.entities.enums.ProjectStatus;
 import com.congdinh.utils.HibernateUtils;
 
@@ -43,6 +44,42 @@ public class Main {
                 EmployeeDetail employeeDetail6 = new EmployeeDetail("Y Yen", "Nam Dinh", "Vietnam", employee6);
                 employee6.setEmployeeDetail(employeeDetail6);
 
+                // Create Project belonging to the department
+                Project project1 = new Project("Setup 10 PC for employee", "Description 1", LocalDate.now(),
+                                LocalDate.now().plusDays(30), ProjectStatus.IN_PROGRESS, department);
+
+                Project project2 = new Project("Migration HR System", "Description 2", LocalDate.now(),
+                                LocalDate.now().plusDays(60),
+                                ProjectStatus.PENDING, department);
+
+                Project project3 = new Project("Headhunting 10 IT Engineers", "Description 3", LocalDate.now(),
+                                LocalDate.now().plusDays(90), ProjectStatus.COMPLETED, department2);
+
+                // Create ProjectEmployee objects
+                // Employee 1 works on Project 1
+                ProjectEmployee projectEmployee1 = new ProjectEmployee(employee1, project1, "Developer",
+                                LocalDate.now(), LocalDate.now().plusDays(30));
+
+                // Employee 2 works on Project 1
+                ProjectEmployee projectEmployee2 = new ProjectEmployee(employee2, project1, "Tester", LocalDate.now(),
+                                LocalDate.now().plusDays(30));
+
+                // Employee 3 works on Project 2
+                ProjectEmployee projectEmployee3 = new ProjectEmployee(employee3, project2, "HR", LocalDate.now(),
+                                LocalDate.now().plusDays(60));
+
+                // Employee 4 works on Project 3
+                ProjectEmployee projectEmployee4 = new ProjectEmployee(employee4, project3, "Recruiter", LocalDate.now(),
+                                LocalDate.now().plusDays(90));
+
+                // Employee 5 works on Project 3
+                ProjectEmployee projectEmployee5 = new ProjectEmployee(employee5, project3, "Recruiter", LocalDate.now(),
+                                LocalDate.now().plusDays(90));
+
+                // Employee 6 works on Project 3
+                ProjectEmployee projectEmployee6 = new ProjectEmployee(employee6, project3, "Recruiter", LocalDate.now(),
+                                LocalDate.now().plusDays(90));
+
                 // Add employees to the department
                 Transaction transaction = null;
                 try (Session session = HibernateUtils.getSessionFactory().openSession()) {
@@ -55,32 +92,16 @@ public class Main {
                         session.persist(employee5);
                         session.persist(employee6);
 
-                        transaction.commit();
-                } catch (Exception e) {
-                        e.printStackTrace();
-                        if (transaction != null) {
-                                transaction.rollback();
-                        }
-                }
-
-                // Create Project belonging to the department
-                Project project1 = new Project("Setup 10 PC for employee", "Description 1", LocalDate.now(),
-                                LocalDate.now().plusDays(30), ProjectStatus.IN_PROGRESS, department);
-
-                Project project2 = new Project("Migration HR System", "Description 2", LocalDate.now(),
-                                LocalDate.now().plusDays(60),
-                                ProjectStatus.PENDING, department);
-
-                Project project3 = new Project("Headhunting 10 IT Engineers", "Description 3", LocalDate.now(),
-                                LocalDate.now().plusDays(90), ProjectStatus.COMPLETED, department2);
-
-                // Add projects to the department
-                try (Session session = HibernateUtils.getSessionFactory().openSession()) {
-                        transaction = session.beginTransaction();
-
                         session.persist(project1);
                         session.persist(project2);
                         session.persist(project3);
+
+                        session.persist(projectEmployee1);
+                        session.persist(projectEmployee2);
+                        session.persist(projectEmployee3);
+                        session.persist(projectEmployee4);
+                        session.persist(projectEmployee5);
+                        session.persist(projectEmployee6);
 
                         transaction.commit();
                 } catch (Exception e) {

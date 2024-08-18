@@ -1,4 +1,4 @@
-package nativequeries;
+package hqlqueries;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -7,23 +7,51 @@ import java.util.UUID;
 import org.junit.jupiter.api.*;
 
 import com.congdinh.entities.Department;
-import com.congdinh.services.nativequeries.DepartmentNativeService;
-import com.congdinh.services.nativequeries.IDepartmentNativeService;
+import com.congdinh.services.hqlqueries.DepartmentHQLService;
+import com.congdinh.services.hqlqueries.IDepartmentHQLService;
 
 import jakarta.transaction.Transactional;
 
-
-public class DepartmentNativeServiceTest {
-    private IDepartmentNativeService departmentService;
+public class DepartmentHQLServiceTest {
+    private IDepartmentHQLService departmentService;
     private Department testDepartment;
 
     @BeforeEach
     public void setUp() {
-        departmentService = new DepartmentNativeService();
+        departmentService = new DepartmentHQLService();
         testDepartment = new Department();
         testDepartment.setId(UUID.randomUUID());
         testDepartment.setName("Test Department");
         testDepartment.setDescription("Test Description");
+    }
+
+    @Test
+    @Transactional
+    public void testGetAllDepartments() {
+        var actual = departmentService.create(testDepartment);
+        assertTrue(actual);
+
+        var departments = departmentService.getAll();
+        assertNotNull(departments);
+        assertTrue(departments.size() > 0);
+
+        // Clean up
+        departmentService.delete(testDepartment.getId());
+    }
+
+    @Test
+    @Transactional
+    public void testGetDepartmentById() {
+        var actual = departmentService.create(testDepartment);
+        assertTrue(actual);
+
+        var department = departmentService.getById(testDepartment.getId());
+        assertNotNull(department);
+        assertEquals(testDepartment.getName(), department.getName());
+        assertEquals(testDepartment.getDescription(), department.getDescription());
+
+        // Clean up
+        departmentService.delete(department.getId());
     }
 
     @Test
@@ -82,35 +110,6 @@ public class DepartmentNativeServiceTest {
 
         department = departmentService.getById(testDepartment.getId());
         assertNull(department);
-    }
-
-    @Test
-    @Transactional
-    public void testGetAllDepartments() {
-        var actual = departmentService.create(testDepartment);
-        assertTrue(actual);
-
-        var departments = departmentService.getAll();
-        assertNotNull(departments);
-        assertTrue(departments.size() > 0);
-
-        // Clean up
-        departmentService.delete(testDepartment.getId());
-    }
-
-    @Test
-    @Transactional
-    public void testGetDepartmentById() {
-        var actual = departmentService.create(testDepartment);
-        assertTrue(actual);
-
-        var department = departmentService.getById(testDepartment.getId());
-        assertNotNull(department);
-        assertEquals(testDepartment.getName(), department.getName());
-        assertEquals(testDepartment.getDescription(), department.getDescription());
-
-        // Clean up
-        departmentService.delete(department.getId());
     }
 
     @AfterEach

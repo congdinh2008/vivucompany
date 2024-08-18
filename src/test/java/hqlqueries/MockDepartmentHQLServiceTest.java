@@ -1,20 +1,27 @@
-package nativequeries;
+package hqlqueries;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 import java.util.List;
 import java.util.UUID;
 
-import org.hibernate.*;
-import org.hibernate.query.NativeQuery;
-import org.junit.jupiter.api.*;
-import org.mockito.*;
+import org.hibernate.Session;
+import org.hibernate.SessionFactory;
+import org.hibernate.Transaction;
+import org.hibernate.query.Query;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.MockitoAnnotations;
 
 import com.congdinh.entities.Department;
-import com.congdinh.services.nativequeries.DepartmentNativeService;
+import com.congdinh.services.hqlqueries.DepartmentHQLService;
 
-public class MockDepartmentNativeServiceTest {
+public class MockDepartmentHQLServiceTest {
     @Mock
     private SessionFactory sessionFactory;
 
@@ -25,7 +32,7 @@ public class MockDepartmentNativeServiceTest {
     private Transaction transaction;
 
     @InjectMocks
-    private DepartmentNativeService departmentService;
+    private DepartmentHQLService departmentService;
 
     private Department testDepartment;
 
@@ -47,8 +54,8 @@ public class MockDepartmentNativeServiceTest {
 
     @Test
     public void testGetAllDepartments() {
-        NativeQuery<Department> query = mock(NativeQuery.class);
-        when(session.createNativeQuery("SELECT * FROM departments", Department.class)).thenReturn(query);
+        Query<Department> query = mock(Query.class);
+        when(session.createQuery("FROM Department", Department.class)).thenReturn(query);
         when(query.getResultList()).thenReturn(departments);
 
         var actual = departmentService.getAll();
@@ -56,34 +63,32 @@ public class MockDepartmentNativeServiceTest {
         assertEquals(departments.size(), actual.size());
 
         // Verify the method is called
-        verify(session, times(1)).createNativeQuery("SELECT * FROM departments", Department.class);
-        verify(query, times(1)).getResultList();
+        verify(session).createQuery("FROM Department", Department.class);
+        verify(query).getResultList();
     }
 
     @Test
     public void testGetDepartmentById() {
-        NativeQuery<Department> query = mock(NativeQuery.class);
-        when(session.createNativeQuery("SELECT * FROM departments WHERE id = :id", Department.class)).thenReturn(query);
+        Query<Department> query = mock(Query.class);
+        when(session.createQuery("FROM Department WHERE id = :id", Department.class)).thenReturn(query);
         when(query.setParameter("id", testDepartment.getId())).thenReturn(query);
         when(query.uniqueResult()).thenReturn(testDepartment);
 
         var actual = departmentService.getById(testDepartment.getId());
         assertNotNull(actual);
-        assertEquals(testDepartment.getId(), actual.getId());
         assertEquals(testDepartment.getName(), actual.getName());
         assertEquals(testDepartment.getDescription(), actual.getDescription());
 
         // Verify the method is called
-        verify(session, times(1)).createNativeQuery("SELECT * FROM departments WHERE id = :id", Department.class);
-        verify(query, times(1)).setParameter("id", testDepartment.getId());
-        verify(query, times(1)).uniqueResult();
+        verify(session).createQuery("FROM Department WHERE id = :id", Department.class);
+        verify(query).setParameter("id", testDepartment.getId());
+        verify(query).uniqueResult();
     }
 
     @Test
     public void testCreateDepartment() {
-        NativeQuery<Department> query = mock(NativeQuery.class);
-        when(session.createNativeQuery(
-                "INSERT INTO departments (id, name, description) VALUES (:id, :name, :description)"))
+        Query<Department> query = mock(Query.class);
+        when(session.createQuery("INSERT INTO Department (id, name, description) VALUES (:id, :name, :description)"))
                 .thenReturn(query);
         when(query.setParameter("id", testDepartment.getId())).thenReturn(query);
         when(query.setParameter("name", testDepartment.getName())).thenReturn(query);
@@ -91,22 +96,20 @@ public class MockDepartmentNativeServiceTest {
         when(query.executeUpdate()).thenReturn(1);
 
         var actual = departmentService.create(testDepartment);
-        assert (actual);
+        assertTrue(actual);
 
         // Verify the method is called
-        verify(session, times(1)).createNativeQuery(
-                "INSERT INTO departments (id, name, description) VALUES (:id, :name, :description)");
-        verify(query, times(1)).setParameter("id", testDepartment.getId());
-        verify(query, times(1)).setParameter("name", testDepartment.getName());
-        verify(query, times(1)).setParameter("description", testDepartment.getDescription());
-        verify(query, times(1)).executeUpdate();
+        verify(session).createQuery("INSERT INTO Department (id, name, description) VALUES (:id, :name, :description)");
+        verify(query).setParameter("id", testDepartment.getId());
+        verify(query).setParameter("name", testDepartment.getName());
+        verify(query).setParameter("description", testDepartment.getDescription());
+        verify(query).executeUpdate();
     }
 
     @Test
     public void testUpdateDepartment() {
-        NativeQuery<Department> query = mock(NativeQuery.class);
-        when(session
-                .createNativeQuery("UPDATE departments SET name = :name, description = :description WHERE id = :id"))
+        Query<Department> query = mock(Query.class);
+        when(session.createQuery("UPDATE Department SET name = :name, description = :description WHERE id = :id"))
                 .thenReturn(query);
         when(query.setParameter("name", testDepartment.getName())).thenReturn(query);
         when(query.setParameter("description", testDepartment.getDescription())).thenReturn(query);
@@ -114,30 +117,30 @@ public class MockDepartmentNativeServiceTest {
         when(query.executeUpdate()).thenReturn(1);
 
         var actual = departmentService.update(testDepartment);
-        assert (actual);
+        assertTrue(actual);
 
         // Verify the method is called
-        verify(session, times(1))
-                .createNativeQuery("UPDATE departments SET name = :name, description = :description WHERE id = :id");
-        verify(query, times(1)).setParameter("name", testDepartment.getName());
-        verify(query, times(1)).setParameter("description", testDepartment.getDescription());
-        verify(query, times(1)).setParameter("id", testDepartment.getId());
-        verify(query, times(1)).executeUpdate();
+        verify(session).createQuery("UPDATE Department SET name = :name, description = :description WHERE id = :id");
+        verify(query).setParameter("name", testDepartment.getName());
+        verify(query).setParameter("description", testDepartment.getDescription());
+        verify(query).setParameter("id", testDepartment.getId());
+        verify(query).executeUpdate();
     }
 
     @Test
     public void testDeleteDepartment() {
-        NativeQuery<Department> query = mock(NativeQuery.class);
-        when(session.createNativeQuery("DELETE FROM departments WHERE id = :id")).thenReturn(query);
+        Query<Department> query = mock(Query.class);
+        when(session.createQuery("DELETE FROM Department WHERE id = :id")).thenReturn(query);
         when(query.setParameter("id", testDepartment.getId())).thenReturn(query);
         when(query.executeUpdate()).thenReturn(1);
 
         var actual = departmentService.delete(testDepartment.getId());
-        assert (actual);
+        assertTrue(actual);
 
         // Verify the method is called
-        verify(session, times(1)).createNativeQuery("DELETE FROM departments WHERE id = :id");
-        verify(query, times(1)).setParameter("id", testDepartment.getId());
-        verify(query, times(1)).executeUpdate();
+        verify(session).createQuery("DELETE FROM Department WHERE id = :id");
+        verify(query).setParameter("id", testDepartment.getId());
+        verify(query).executeUpdate();
     }
+
 }

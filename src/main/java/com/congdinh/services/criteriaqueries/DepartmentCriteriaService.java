@@ -15,6 +15,7 @@ import jakarta.persistence.NoResultException;
 import jakarta.persistence.criteria.CriteriaBuilder;
 import jakarta.persistence.criteria.CriteriaQuery;
 import jakarta.persistence.criteria.CriteriaUpdate;
+import jakarta.persistence.criteria.Predicate;
 
 public class DepartmentCriteriaService implements IDepartmentCriteriaService {
     protected SessionFactory sessionFactory;
@@ -93,7 +94,8 @@ public class DepartmentCriteriaService implements IDepartmentCriteriaService {
             CriteriaUpdate<Department> criteria = builder.createCriteriaUpdate(Department.class);
             criteria.set("name", department.getName());
             criteria.set("description", department.getDescription());
-            criteria.where(builder.equal(criteria.from(Department.class).get("id"), department.getId()));
+            Predicate predicate = builder.equal(criteria.from(Department.class).get("id"), department.getId());
+            criteria.where(predicate);
             var result = session.createQuery(criteria).executeUpdate();
             transaction.commit();
             return result > 0;

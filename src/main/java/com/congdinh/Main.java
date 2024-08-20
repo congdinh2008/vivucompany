@@ -2,113 +2,216 @@ package com.congdinh;
 
 import java.time.LocalDate;
 
-import org.hibernate.Session;
-import org.hibernate.Transaction;
-
 import com.congdinh.entities.Department;
 import com.congdinh.entities.Employee;
 import com.congdinh.entities.EmployeeDetail;
 import com.congdinh.entities.Project;
 import com.congdinh.entities.ProjectEmployee;
 import com.congdinh.entities.enums.ProjectStatus;
-import com.congdinh.utils.HibernateUtils;
+import com.congdinh.services.DepartmentService;
+import com.congdinh.services.EmployeeService;
+import com.congdinh.services.ProjectService;
+
+import com.congdinh.services.IDepartmentService;
+import com.congdinh.services.IEmployeeService;
+import com.congdinh.services.IProjectEmployeeService;
+import com.congdinh.services.IProjectService;
+import com.congdinh.services.ProjectEmployeeService;
 
 public class Main {
+
         public static void main(String[] args) {
+
+                // #region Create Departments
+
+                // Create Department
+                IDepartmentService departmentService = new DepartmentService();
+
                 // Create Department and Employee objects
-                Department department = new Department("IT", "Information Technology");
+                Department it = new Department("IT", "Information Technology");
+                Department hr = new Department("HR", "Human Resources");
 
-                Employee employee1 = new Employee("Cong Dinh", "cong@domain.com", "0987654321", department);
-                EmployeeDetail employeeDetail1 = new EmployeeDetail("Y Yen", "Nam Dinh", "Vietnam", employee1);
-                employee1.setEmployeeDetail(employeeDetail1);
+                // Save Department
+                System.out.println("Insert Department");
+                try {
+                        if (departmentService.getAll().size() <= 0) {
+                                departmentService.create(it);
+                                departmentService.create(hr);
+                        }
 
-                Employee employee2 = new Employee("Thang Nguyen", "thang@domain.com", "0123456789", department);
-                EmployeeDetail employeeDetail2 = new EmployeeDetail("Hung Ha", "Thai Binh", "Vietnam", employee2);
-                employee2.setEmployeeDetail(employeeDetail2);
+                } catch (Exception e) {
+                        e.printStackTrace();
+                }
 
-                Employee employee3 = new Employee("An Dinh", "an@domain.com", "0123453789", department);
-                EmployeeDetail employeeDetail3 = new EmployeeDetail("Y Yen", "Nam Dinh", "Vietnam", employee3);
-                employee3.setEmployeeDetail(employeeDetail3);
+                // #endregion
 
-                Department department2 = new Department("HR", "Human Resources");
+                // #region Create Employees
 
-                Employee employee4 = new Employee("Van Nguyen", "van@domain.com", "0126456789", department2);
-                EmployeeDetail employeeDetail4 = new EmployeeDetail("Hung Ha", "Thai Binh", "Vietnam", employee4);
-                employee4.setEmployeeDetail(employeeDetail4);
+                // Create Employee and EmployeeDetail objects
+                IEmployeeService employeeService = new EmployeeService();
 
-                Employee employee5 = new Employee("Linh Tong", "linh@domain.com", "0123452789", department2);
-                EmployeeDetail employeeDetail5 = new EmployeeDetail("Y Yen", "Nam Dinh", "Vietnam", employee5);
-                employee5.setEmployeeDetail(employeeDetail5);
+                try {
+                        it = departmentService.getById(it.getId());
+                        hr = departmentService.getById(hr.getId());
+                } catch (Exception e) {
+                        e.printStackTrace();
+                }
 
-                Employee employee6 = new Employee("Yen Duong", "yen@domain.com", "0123446789", department2);
-                EmployeeDetail employeeDetail6 = new EmployeeDetail("Y Yen", "Nam Dinh", "Vietnam", employee6);
-                employee6.setEmployeeDetail(employeeDetail6);
+                Employee cong = new Employee("Cong Dinh", "cong@domain.com", "0987654321", it);
+                EmployeeDetail congDetail = new EmployeeDetail("Y Yen", "Nam Dinh", "Vietnam", cong);
+                cong.setEmployeeDetail(congDetail);
+
+                Employee thang = new Employee("Thang Nguyen", "thang@domain.com", "0123456789", it);
+                EmployeeDetail thangDetail = new EmployeeDetail("Hung Ha", "Thai Binh", "Vietnam", thang);
+                thang.setEmployeeDetail(thangDetail);
+
+                Employee an = new Employee("An Dinh", "an@domain.com", "0123453789", it);
+                EmployeeDetail anDetail = new EmployeeDetail("Y Yen", "Nam Dinh", "Vietnam", an);
+                an.setEmployeeDetail(anDetail);
+
+                Employee van = new Employee("Van Nguyen", "van@domain.com", "0126456789", hr);
+                EmployeeDetail vanDetail = new EmployeeDetail("Hung Ha", "Thai Binh", "Vietnam", van);
+                van.setEmployeeDetail(vanDetail);
+
+                Employee linh = new Employee("Linh Tong", "linh@domain.com", "0123452789", hr);
+                EmployeeDetail linhDetail = new EmployeeDetail("Y Yen", "Nam Dinh", "Vietnam", linh);
+                linh.setEmployeeDetail(linhDetail);
+
+                Employee yen = new Employee("Yen Duong", "yen@domain.com", "0123446789", hr);
+                EmployeeDetail yenDetail = new EmployeeDetail("Y Yen", "Nam Dinh", "Vietnam", yen);
+                yen.setEmployeeDetail(yenDetail);
+
+                // Save Employee
+                System.out.println("Insert Employee with EmployeeDetail");
+                try {
+                        if (employeeService.getAll().size() <= 0) {
+                                employeeService.create(cong);
+                                employeeService.create(thang);
+                                employeeService.create(an);
+                                employeeService.create(van);
+                                employeeService.create(linh);
+                                employeeService.create(yen);
+                        }
+                } catch (Exception e) {
+                        e.printStackTrace();
+                }
+
+                // #endregion
+
+                // #region Create Projects
 
                 // Create Project belonging to the department
-                Project project1 = new Project("Setup 10 PC for employee", "Description 1", LocalDate.now(),
-                                LocalDate.now().plusDays(30), ProjectStatus.IN_PROGRESS, department);
+                IProjectService projectService = new ProjectService();
 
-                Project project2 = new Project("Migration HR System", "Description 2", LocalDate.now(),
+                Project project1 = new Project("Setup 10 PC for employee", "Description 1",
+                                LocalDate.now(),
+                                LocalDate.now().plusDays(30), ProjectStatus.IN_PROGRESS, it);
+
+                Project project2 = new Project("Migration HR System", "Description 2",
+                                LocalDate.now(),
                                 LocalDate.now().plusDays(60),
-                                ProjectStatus.PENDING, department);
+                                ProjectStatus.PENDING, it);
 
-                Project project3 = new Project("Headhunting 10 IT Engineers", "Description 3", LocalDate.now(),
-                                LocalDate.now().plusDays(90), ProjectStatus.COMPLETED, department2);
+                Project project3 = new Project("Headhunting 10 IT Engineers", "Description 3",
+                                LocalDate.now(),
+                                LocalDate.now().plusDays(90), ProjectStatus.COMPLETED, hr);
+
+                // Save Project
+                System.out.println("Insert Projects");
+                try {
+                        if (projectService.getAll().size() <= 0) {
+                                projectService.create(project1);
+                                projectService.create(project2);
+                                projectService.create(project3);
+                        }
+                } catch (Exception e) {
+                        e.printStackTrace();
+                }
+
+                // #endregion
+
+                // #region Create ProjectEmployees
 
                 // Create ProjectEmployee objects
+                IProjectEmployeeService projectEmployeeService = new ProjectEmployeeService();
+
                 // Employee 1 works on Project 1
-                ProjectEmployee projectEmployee1 = new ProjectEmployee(employee1, project1, "Developer",
+                ProjectEmployee projectEmployee1 = new ProjectEmployee(cong, project1, "Developer",
                                 LocalDate.now(), LocalDate.now().plusDays(30));
 
                 // Employee 2 works on Project 1
-                ProjectEmployee projectEmployee2 = new ProjectEmployee(employee2, project1, "Tester", LocalDate.now(),
+                ProjectEmployee projectEmployee2 = new ProjectEmployee(thang, project1, "Tester", LocalDate.now(),
                                 LocalDate.now().plusDays(30));
 
                 // Employee 3 works on Project 2
-                ProjectEmployee projectEmployee3 = new ProjectEmployee(employee3, project2, "HR", LocalDate.now(),
+                ProjectEmployee projectEmployee3 = new ProjectEmployee(an, project2, "HR", LocalDate.now(),
                                 LocalDate.now().plusDays(60));
 
                 // Employee 4 works on Project 3
-                ProjectEmployee projectEmployee4 = new ProjectEmployee(employee4, project3, "Recruiter", LocalDate.now(),
+                ProjectEmployee projectEmployee4 = new ProjectEmployee(van, project3, "Recruiter",
+                                LocalDate.now(),
                                 LocalDate.now().plusDays(90));
 
                 // Employee 5 works on Project 3
-                ProjectEmployee projectEmployee5 = new ProjectEmployee(employee5, project3, "Recruiter", LocalDate.now(),
+                ProjectEmployee projectEmployee5 = new ProjectEmployee(linh, project3, "Recruiter",
+                                LocalDate.now(),
                                 LocalDate.now().plusDays(90));
 
                 // Employee 6 works on Project 3
-                ProjectEmployee projectEmployee6 = new ProjectEmployee(employee6, project3, "Recruiter", LocalDate.now(),
+                ProjectEmployee projectEmployee6 = new ProjectEmployee(yen, project3, "Recruiter",
+                                LocalDate.now(),
                                 LocalDate.now().plusDays(90));
 
-                // Add employees to the department
-                Transaction transaction = null;
-                try (Session session = HibernateUtils.getSessionFactory().openSession()) {
-                        transaction = session.beginTransaction();
-
-                        session.persist(employee1);
-                        session.persist(employee2);
-                        session.persist(employee3);
-                        session.persist(employee4);
-                        session.persist(employee5);
-                        session.persist(employee6);
-
-                        session.persist(project1);
-                        session.persist(project2);
-                        session.persist(project3);
-
-                        session.persist(projectEmployee1);
-                        session.persist(projectEmployee2);
-                        session.persist(projectEmployee3);
-                        session.persist(projectEmployee4);
-                        session.persist(projectEmployee5);
-                        session.persist(projectEmployee6);
-
-                        transaction.commit();
+                // Save ProjectEmployee
+                System.out.println("Insert ProjectEmployee");
+                try {
+                        if (projectEmployeeService.getAll().size() <= 0) {
+                                projectEmployeeService.create(projectEmployee1);
+                                projectEmployeeService.create(projectEmployee2);
+                                projectEmployeeService.create(projectEmployee3);
+                                projectEmployeeService.create(projectEmployee4);
+                                projectEmployeeService.create(projectEmployee5);
+                                projectEmployeeService.create(projectEmployee6);
+                        }
                 } catch (Exception e) {
                         e.printStackTrace();
-                        if (transaction != null) {
-                                transaction.rollback();
-                        }
+                }
+
+                // #endregion
+
+                // Get all Department objects
+
+                System.out.println("All Departments:");
+                try {
+                        departmentService.getAll().forEach(d -> {
+                                System.out.println(d.getName());
+                        });
+                } catch (Exception e) {
+                        e.printStackTrace();
+                }
+
+                // Get Department by Id with Employees
+
+                System.out.println("Department by Id with Employees:");
+                try {
+                        Department department = departmentService.getDepartmentByIdWithEmployees(it.getId()).get(0);
+                        System.out.println(department.getName());
+                        department.getEmployees().forEach(e -> {
+                                System.out.println(e.getName());
+                        });
+                } catch (Exception e) {
+                        e.printStackTrace();
+                }
+
+                System.out.println("Get Employee by Id with Projects:");
+                try {
+                        Employee employee = employeeService.getEmployeeByIdWithProjects(cong.getId()).get(0);
+                        System.out.println(employee.getName());
+                        employee.getProjectEmployees().forEach(pe -> {
+                                System.out.println(pe.getProject().getName());
+                        });
+                } catch (Exception e) {
+                        e.printStackTrace();
                 }
         }
 }

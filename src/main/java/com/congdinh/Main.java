@@ -2,6 +2,8 @@ package com.congdinh;
 
 import java.time.LocalDate;
 
+import org.hibernate.Session;
+
 import com.congdinh.entities.Department;
 import com.congdinh.entities.Employee;
 import com.congdinh.entities.EmployeeDetail;
@@ -11,7 +13,7 @@ import com.congdinh.entities.enums.ProjectStatus;
 import com.congdinh.services.DepartmentService;
 import com.congdinh.services.EmployeeService;
 import com.congdinh.services.ProjectService;
-
+import com.congdinh.utils.HibernateUtils;
 import com.congdinh.services.IDepartmentService;
 import com.congdinh.services.IEmployeeService;
 import com.congdinh.services.IProjectEmployeeService;
@@ -206,6 +208,29 @@ public class Main {
                 System.out.println("Get Employee by Id with Projects:");
                 try {
                         Employee employee = employeeService.getEmployeeByIdWithProjects(cong.getId()).get(0);
+                        System.out.println(employee.getName());
+                        employee.getProjectEmployees().forEach(pe -> {
+                                System.out.println(pe.getProject().getName());
+                        });
+                } catch (Exception e) {
+                        e.printStackTrace();
+                }
+
+                System.out.println("Get Project by Id with Employees without method fetch:");
+                try (Session session = HibernateUtils.getSessionFactory().openSession()) {
+                        Project project = session.get(Project.class, project1.getId());
+                        System.out.println(project.getName());
+                        project.getProjectEmployees().forEach(pe -> {
+                                System.out.println(pe.getEmployee().getName());
+                        });
+                } catch (Exception e) {
+                        e.printStackTrace();
+
+                }
+
+                System.out.println("Get Employee by Id with Projects without method fetch:");
+                try (Session session = HibernateUtils.getSessionFactory().openSession()) {
+                        Employee employee = session.get(Employee.class, cong.getId());
                         System.out.println(employee.getName());
                         employee.getProjectEmployees().forEach(pe -> {
                                 System.out.println(pe.getProject().getName());

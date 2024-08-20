@@ -19,7 +19,7 @@ public class Department {
     @Column(name = "description", length = 1000)
     private String description;
 
-    @OneToMany(mappedBy = "department")
+    @OneToMany(mappedBy = "department", fetch = FetchType.LAZY)
     private Set<Employee> employees;
 
     // Getters and setters
@@ -45,6 +45,14 @@ public class Department {
 
     public void setDescription(String description) {
         this.description = description;
+    }
+
+    public Set<Employee> getEmployees() {
+        return employees;
+    }
+
+    public void setEmployees(Set<Employee> employees) {
+        this.employees = employees;
     }
 
     // Constructors

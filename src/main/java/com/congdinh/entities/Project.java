@@ -34,7 +34,7 @@ public class Project {
     @Column(name = "status")
     private ProjectStatus status;
 
-    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.MERGE)
     @JoinColumn(name = "department_id")
     private Department department;
 
